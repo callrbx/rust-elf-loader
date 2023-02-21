@@ -3,4 +3,6 @@
 
 # binaries
 payload
+payload-static
+payload-asm
 loader
