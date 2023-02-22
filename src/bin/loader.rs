@@ -41,13 +41,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         let len = len + padding;
 
         let addr: *mut u8 = aligned_start as _;
+        let paddr: *mut u8 = (aligned_start + padding) as _;
         println!("Addr: {:p}, Padding: {:08x}", addr, padding);
 
         let map = MemoryMap::new(len, &[MapOption::MapWritable, MapOption::MapAddr(addr)])?;
 
         println!("Copying segment data... {}", ph.data.len());
         {
-            let dst = unsafe { std::slice::from_raw_parts_mut(addr, ph.data.len()) };
+            let dst = unsafe { std::slice::from_raw_parts_mut(paddr, ph.data.len()) };
             dst.copy_from_slice(&ph.data[..]);
         }
 
