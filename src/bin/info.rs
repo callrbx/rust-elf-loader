@@ -20,12 +20,23 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Binary Type: {:?}", elf.r#type);
     println!("Entry Point: {:?}", elf.entry_point);
 
-    println!("Program Headers:");
-    for pheader in elf.program_headers {
+    println!("\nProgram Headers:");
+    for pheader in &elf.program_headers {
         println!("{:?}", pheader);
     }
 
-    println!("Section Headers:");
+    println!("\nDynamic entries:");
+    if let Some(ds) = &elf
+        .program_headers
+        .into_iter()
+        .find(|ph| ph.r#type == elfparse::SegmentType::DYNAMIC)
+    {
+        if let elfparse::SegmentContents::Dynamic(ref table) = ds.contents {
+            for entry in table {
+                println!("- {:?} @ Addr: {:?}", entry.tag, entry.addr);
+            }
+        }
+    }
 
     Ok(())
 }
